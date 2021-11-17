@@ -1,6 +1,6 @@
 {
 	"name": "@enso-rings/dynamo-client",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"description": "A simple library for easy querying of DynamoDB using MongoDB-style queries",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
