@@ -1,6 +1,6 @@
 {
-	"name": "dynamongo",
-	"version": "0.2.0",
+	"name": "@enso-rings/dynamo-client",
+	"version": "0.3.0",
 	"description": "A simple library for easy querying of DynamoDB using MongoDB-style queries",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
 		"mongodb",
 		"library"
 	],
-	"author": "Kevin Van Ryckegem",
+	"author": "Enso Rings",
 	"license": "Apache-2.0",
 	"dependencies": {
 		"aws-sdk": "^2.883.0"
