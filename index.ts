@@ -1,4 +1,4 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb"
+import { DynamoDB, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
 
 interface DynamongoOptions {
@@ -14,6 +14,7 @@ interface DynamongoExpression {
   values: object,
   names: object
 }
+
 /**
 */
 class DynamoDBClient {
@@ -43,8 +44,15 @@ class DynamoDBClient {
     if (options.timestampUpdatedField) {
       this._timestampUpdatedField = options.timestampUpdatedField;
     }
+    let clientOptions: DynamoDBClientConfig = { region };
+    if (options.accessKeyId && options.secretAccessKey) {
+      clientOptions.credentials = {
+        accessKeyId: options.accessKeyId,
+        secretAccessKey: options.secretAccessKey,
+      };
+    }
     // setup dynamodb
-    this._client = new DynamoDB({ region });
+    this._client = new DynamoDB(clientOptions);
     this._connection = DynamoDBDocument.from(this._client);
   }
   private _log(...args): void {
