@@ -1,26 +1,31 @@
 {
-	"name": "@enso-rings/dynamo-client",
-	"version": "0.4.0",
-	"description": "A simple library for easy querying of DynamoDB using MongoDB-style queries",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"prepublish": "tsc"
-	},
-	"keywords": [
-		"dynamo",
-		"dynamodb",
-		"mongo",
-		"mongodb",
-		"library"
-	],
-	"author": "Enso Rings",
-	"license": "Apache-2.0",
-	"dependencies": {
-		"aws-sdk": "^2.883.0"
-	},
-	"devDependencies": {
-		"@types/node": "^14.14.37"
-	}
+  "name": "@enso-rings/dynamo-client",
+  "version": "0.5.0",
+  "description": "A simple library for easy querying of DynamoDB using MongoDB-style queries",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/ensorings/dynamo-client"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "tsc"
+  },
+  "keywords": [
+    "dynamo",
+    "dynamodb",
+    "mongo",
+    "mongodb",
+    "library"
+  ],
+  "author": "Enso Rings",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.204.0",
+    "@aws-sdk/lib-dynamodb": "^3.204.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37"
+  }
 }

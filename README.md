@@ -82,7 +82,7 @@ const result = await db.insert('my-db-table', {
 
 ## Roadmap
 
-See the [open issues](https://github.com/EnsoRings/dynamo-client/issues) for a
+See the [open issues](https://gitlab/EnsoRings/dynamo-client/issues) for a
 list of proposed features (and known issues).
 
 ## Contributing

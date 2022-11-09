@@ -1,4 +1,6 @@
-const AWS = require('aws-sdk');
+import { DynamoDB } from "@aws-sdk/client-dynamodb"
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
+
 interface DynamongoOptions {
   isVerbose?: boolean,
   timestampsEnabled?: boolean,
@@ -13,26 +15,26 @@ interface DynamongoExpression {
   names: object
 }
 /**
- */
-class DynamoDB {
+*/
+class DynamoDBClient {
   private _connection = null;
+  private _client = null;
   private _isVerbose = false;
   private _timestampsEnabled = false;
   private _timestampCreatedField = 'createdAt';
   private _timestampUpdatedField = 'updatedAt';
+  /**
+   * if you have non-standard environment variables, you'll need to setup the
+   * AWS sdk config.
+   * ```
+   * AWS.config.update({
+   *   accessKeyId
+   *   secretAccessKey
+   * })
+   * ```
+   */
   constructor(region, options: DynamongoOptions) {
     options = options || {};
-    if (region && options.accessKeyId && options.secretAccessKey) {
-      // optionally override the environment
-      AWS.config.update({
-        accessKeyId: options.accessKeyId,
-        secretAccessKey: options.secretAccessKey,
-        region,
-      })
-    } else if (region) {
-      AWS.config.update({ region });
-    }
-    this._connection = new AWS.DynamoDB.DocumentClient();
     this._isVerbose = options.isVerbose;
     this._timestampsEnabled = options.timestampsEnabled;
     if (options.timestampCreatedField) {
@@ -41,6 +43,9 @@ class DynamoDB {
     if (options.timestampUpdatedField) {
       this._timestampUpdatedField = options.timestampUpdatedField;
     }
+    // setup dynamodb
+    this._client = new DynamoDB({ region });
+    this._connection = DynamoDBDocument.from(this._client);
   }
   private _log(...args): void {
     this._isVerbose && console.log('Dynamongo: ', ...args);
@@ -67,7 +72,7 @@ class DynamoDB {
    * Date.now() gives a valid unix time in ms, but dynamodb ttl only works with a
    * resolution of *seconds* since unix epoch.
    */
-   public unixEpoch() {
+  public unixEpoch() {
     return Math.trunc(Date.now() / 1000);
   }
   /**
@@ -77,7 +82,7 @@ class DynamoDB {
   }
   /**
   */
-  public async getWhere(table: string, where: object) {
+  public getWhere(table: string, where: object) {
     const expression = this._generateExpression(where, 'AND');
     const params = {
       TableName: table,
@@ -86,11 +91,11 @@ class DynamoDB {
       ExpressionAttributeNames: expression.names
     };
     this._log('getWhere()', params);
-    return await this._connection.scan(params).promise();
+    return this._connection.scan(params).promise();
   }
   /**
   */
-  public async insert(table: string, data: object) : Promise<object> {
+  public insert(table: string, data: object) : Promise<object> {
     const params = {
       TableName: table,
       Item: data
@@ -99,7 +104,7 @@ class DynamoDB {
       params.Item[this._timestampCreatedField] = this.unixEpoch();
     }
     this._log('insert()', params);
-    return await this._connection.put(params).promise();
+    return this._connection.put(params).promise();
   }
   /**
   */
@@ -110,11 +115,11 @@ class DynamoDB {
     };
     this._log('getByKey()', params);
     const response = await this._connection.get(params).promise();
-    return (response && response.Item) ? response.Item : response
+    return (response && response.Item) ? response.Item : response;
   }
   /**
   */
-  public async updateByKey(table: string, keys: object, data: object): Promise<object>{
+  public updateByKey(table: string, keys: object, data: object): Promise<object>{
     if (this._timestampsEnabled) {
       data[this._timestampUpdatedField] = this.unixEpoch();
     }
@@ -128,17 +133,17 @@ class DynamoDB {
       ReturnValues: "UPDATED_NEW"
     };
     this._log('updateByKey()', params);
-    return await this._connection.update(params).promise();
+    return this._connection.update(params).promise();
   }
   /**
   */
-  public async deleteByKey(table: string, keys: object): Promise<object>{
+  public deleteByKey(table: string, keys: object): Promise<object> {
     const params = {
       TableName: table,
       Key: keys
     };
     this._log('deleteByKey()', params);
-    return await this._connection.delete(params).promise();
+    return this._connection.delete(params).promise();
   }
 }
 /**
@@ -146,26 +151,26 @@ class DynamoDB {
  * @param {string} region - dc region
  * @param {string} table - table to scope this instance to
  */
-class DynamoTable extends DynamoDB {
+class DynamoTable extends DynamoDBClient {
   public table = null
   constructor(region, table, options: DynamongoOptions) {
-    super(region, options)
-    this.table = table
+    super(region, options);
+    this.table = table;
   }
   public getByKey(keys) {
-    return super.getByKey(this.table, keys)
+    return super.getByKey(this.table, keys);
   }
   public updateByKey(keys, data) {
-    return super.updateByKey(this.table, keys, data)
+    return super.updateByKey(this.table, keys, data);
   }
   public deleteByKey(keys) {
-    return super.deleteByKey(this.table, keys)
+    return super.deleteByKey(this.table, keys);
   }
   public getWhere(data) {
-    return super.getWhere(this.table, data)
+    return super.getWhere(this.table, data);
   }
   public insert(data) {
-    return super.insert(this.table, data)
+    return super.insert(this.table, data);
   }
 }
 module.exports = { DynamoDB, DynamoTable };
