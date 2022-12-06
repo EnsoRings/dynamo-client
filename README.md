@@ -14,6 +14,15 @@ Install the dynamo-client package into your project
 npm install @enso-rings/dynamo-client
 ```
 
+### Compatibility with Cloudflare Workers
+
+Working with DynamoDB in CF workers is not very straightforward, but some small
+changes in this repo make it possible! first we configure typescript to build
+very modern javascript instead of es5/commonjs (`compilerOptions.module = 'es6'`).
+*Most projects will need some setup to use the library!*
+
+Your project will need to declare the following in `wrangler.toml`: `node_compat = true`.
+
 ## Usage
 
 Get a dynamo-client instance: enter the region and optionally an object with
