@@ -16,6 +16,7 @@ interface DynamongoExpression {
 }
 
 /**
+ * @link https://github.com/aws/aws-sdk-js-v3/blob/main/lib/lib-dynamodb/README.md
 */
 class DynamoDBClient {
   private _connection = null;
