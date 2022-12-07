@@ -99,7 +99,7 @@ class DynamoDBClient {
       ExpressionAttributeNames: expression.names
     };
     this._log('getWhere()', params);
-    return this._connection.scan(params).promise();
+    return this._connection.scan(params)
   }
   /**
   */
@@ -112,7 +112,7 @@ class DynamoDBClient {
       params.Item[this._timestampCreatedField] = this.unixEpoch();
     }
     this._log('insert()', params);
-    return this._connection.put(params).promise();
+    return this._connection.put(params)
   }
   /**
   */
@@ -122,7 +122,7 @@ class DynamoDBClient {
       Key: keys
     };
     this._log('getByKey()', params);
-    const response = await this._connection.get(params).promise();
+    const response = await this._connection.get(params)
     return (response && response.Item) ? response.Item : response;
   }
   /**
@@ -141,7 +141,7 @@ class DynamoDBClient {
       ReturnValues: "UPDATED_NEW"
     };
     this._log('updateByKey()', params);
-    return this._connection.update(params).promise();
+    return this._connection.update(params)
   }
   /**
   */
@@ -151,7 +151,7 @@ class DynamoDBClient {
       Key: keys
     };
     this._log('deleteByKey()', params);
-    return this._connection.delete(params).promise();
+    return this._connection.delete(params)
   }
 }
 /**
