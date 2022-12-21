@@ -54,7 +54,12 @@ class DynamoDBClient {
     }
     // setup dynamodb
     this._client = new DynamoDB(clientOptions);
-    this._connection = DynamoDBDocument.from(this._client);
+    this._connection = DynamoDBDocument.from(this._client, {
+      marshallOptions: {
+        convertEmptyValues: true,
+        removeUndefinedValues: true
+      }
+    });
   }
   private _log(...args): void {
     this._isVerbose && console.log('Dynamongo: ', ...args);
@@ -182,4 +187,4 @@ class DynamoTable extends DynamoDBClient {
     return super.insert(this.table, data);
   }
 }
-module.exports = { DynamoDB, DynamoTable };
+module.exports = { DynamoDB: DynamoDBClient, DynamoTable };
