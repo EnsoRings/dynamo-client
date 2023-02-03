@@ -96,33 +96,7 @@ class DynamoDBClient {
   }
   /**
   */
-  public getWhere(table: string, where: object) {
-    const expression = this._generateExpression(where, 'AND');
-    const params = {
-      TableName: table,
-      FilterExpression: expression.data,
-      ExpressionAttributeValues: expression.values,
-      ExpressionAttributeNames: expression.names
-    };
-    this._log('getWhere()', params);
-    return this._connection.scan(params)
-  }
-  /**
-  */
-  public insert(table: string, data: object) : Promise<object> {
-    const params = {
-      TableName: table,
-      Item: data
-    };
-    if (this._timestampsEnabled) {
-      params.Item[this._timestampCreatedField] = this.unixEpoch();
-    }
-    this._log('insert()', params);
-    return this._connection.put(params)
-  }
-  /**
-  */
-  public async getByKey(table: string, keys: object): Promise<object> {
+  public async getByKey<T>(table: string, keys: object): Promise<T> {
     const params = {
       TableName: table,
       Key: keys
@@ -133,7 +107,7 @@ class DynamoDBClient {
   }
   /**
   */
-  public updateByKey(table: string, keys: object, data: object): Promise<object>{
+  public updateByKey<T>(table: string, keys: object, data: object): Promise<T>{
     if (this._timestampsEnabled) {
       data[this._timestampUpdatedField] = this.unixEpoch();
     }
@@ -151,13 +125,39 @@ class DynamoDBClient {
   }
   /**
   */
-  public deleteByKey(table: string, keys: object): Promise<object> {
+  public deleteByKey<T>(table: string, keys: object): Promise<T> {
     const params = {
       TableName: table,
       Key: keys
     };
     this._log('deleteByKey()', params);
     return this._connection.delete(params)
+  }
+  /**
+  */
+  public getWhere<T>(table: string, where: object): Promise<T> {
+    const expression = this._generateExpression(where, 'AND');
+    const params = {
+      TableName: table,
+      FilterExpression: expression.data,
+      ExpressionAttributeValues: expression.values,
+      ExpressionAttributeNames: expression.names
+    };
+    this._log('getWhere()', params);
+    return this._connection.scan(params)
+  }
+  /**
+  */
+  public insert<T>(table: string, data: object) : Promise<T> {
+    const params = {
+      TableName: table,
+      Item: data
+    };
+    if (this._timestampsEnabled) {
+      params.Item[this._timestampCreatedField] = this.unixEpoch();
+    }
+    this._log('insert()', params);
+    return this._connection.put(params)
   }
 }
 /**
@@ -171,20 +171,24 @@ class DynamoTable extends DynamoDBClient {
     super(region, options);
     this.table = table;
   }
-  public getByKey(keys) {
-    return super.getByKey(this.table, keys);
+  public getByKey<T>(keys) {
+    return super.getByKey<T>(this.table, keys);
   }
-  public updateByKey(keys, data) {
-    return super.updateByKey(this.table, keys, data);
+  public updateByKey<T>(keys, data) {
+    return super.updateByKey<T>(this.table, keys, data);
   }
-  public deleteByKey(keys) {
-    return super.deleteByKey(this.table, keys);
+  public deleteByKey<T>(keys) {
+    return super.deleteByKey<T>(this.table, keys);
   }
-  public getWhere(data) {
-    return super.getWhere(this.table, data);
+  public getWhere<T>(data) {
+    return super.getWhere<T>(this.table, data);
   }
-  public insert(data) {
-    return super.insert(this.table, data);
+  public insert<T>(data) {
+    return super.insert<T>(this.table, data);
   }
 }
-module.exports = { DynamoDB: DynamoDBClient, DynamoTable };
+
+export {
+  DynamoDBClient as DynamoDB,
+  DynamoTable
+}
